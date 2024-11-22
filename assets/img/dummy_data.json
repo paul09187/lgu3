@@ -1,0 +1,774 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "name": "User1",
+            "email": "user1@example.com",
+            "password": "hashed_password1",
+            "role": "user",
+            "contact_number": "0905491535",
+            "created_at": "2022-09-05 09:41:15"
+        },
+        {
+            "id": 2,
+            "name": "User2",
+            "email": "user2@example.com",
+            "password": "hashed_password2",
+            "role": "user",
+            "contact_number": "0905164093",
+            "created_at": "2023-07-03 21:09:13"
+        },
+        {
+            "id": 3,
+            "name": "User3",
+            "email": "user3@example.com",
+            "password": "hashed_password3",
+            "role": "admin",
+            "contact_number": "0905168839",
+            "created_at": "2022-09-12 22:50:02"
+        },
+        {
+            "id": 4,
+            "name": "User4",
+            "email": "user4@example.com",
+            "password": "hashed_password4",
+            "role": "user",
+            "contact_number": "0905913229",
+            "created_at": "2022-10-27 17:02:11"
+        },
+        {
+            "id": 5,
+            "name": "User5",
+            "email": "user5@example.com",
+            "password": "hashed_password5",
+            "role": "admin",
+            "contact_number": "0905998218",
+            "created_at": "2023-09-25 20:58:42"
+        },
+        {
+            "id": 6,
+            "name": "User6",
+            "email": "user6@example.com",
+            "password": "hashed_password6",
+            "role": "admin",
+            "contact_number": "0905956970",
+            "created_at": "2023-11-10 18:53:48"
+        },
+        {
+            "id": 7,
+            "name": "User7",
+            "email": "user7@example.com",
+            "password": "hashed_password7",
+            "role": "admin",
+            "contact_number": "0905423711",
+            "created_at": "2022-05-16 16:21:53"
+        },
+        {
+            "id": 8,
+            "name": "User8",
+            "email": "user8@example.com",
+            "password": "hashed_password8",
+            "role": "admin",
+            "contact_number": "0905469685",
+            "created_at": "2022-02-25 22:50:28"
+        },
+        {
+            "id": 9,
+            "name": "User9",
+            "email": "user9@example.com",
+            "password": "hashed_password9",
+            "role": "user",
+            "contact_number": "0905934223",
+            "created_at": "2022-04-23 06:16:24"
+        },
+        {
+            "id": 10,
+            "name": "User10",
+            "email": "user10@example.com",
+            "password": "hashed_password10",
+            "role": "admin",
+            "contact_number": "0905746236",
+            "created_at": "2022-12-02 14:47:52"
+        }
+    ],
+    "scholarship_applications": [
+        {
+            "id": 1,
+            "user_id": 7,
+            "full_name": "Applicant 1",
+            "email": "applicant1@example.com",
+            "contact_number": "0917780139",
+            "status": "pending",
+            "submitted_documents": 0,
+            "scheduled_date": "2023-01-05",
+            "created_at": "2023-08-24 06:06:15"
+        },
+        {
+            "id": 2,
+            "user_id": 2,
+            "full_name": "Applicant 2",
+            "email": "applicant2@example.com",
+            "contact_number": "0917242976",
+            "status": "approved",
+            "submitted_documents": 0,
+            "scheduled_date": "2023-02-06",
+            "created_at": "2022-03-24 11:16:11"
+        },
+        {
+            "id": 3,
+            "user_id": 8,
+            "full_name": "Applicant 3",
+            "email": "applicant3@example.com",
+            "contact_number": "0917663909",
+            "status": "approved",
+            "submitted_documents": 1,
+            "scheduled_date": "2023-11-12",
+            "created_at": "2022-05-01 18:39:44"
+        },
+        {
+            "id": 4,
+            "user_id": 7,
+            "full_name": "Applicant 4",
+            "email": "applicant4@example.com",
+            "contact_number": "0917234305",
+            "status": "interview",
+            "submitted_documents": 0,
+            "scheduled_date": "2023-05-06",
+            "created_at": "2023-06-29 02:48:21"
+        },
+        {
+            "id": 5,
+            "user_id": 5,
+            "full_name": "Applicant 5",
+            "email": "applicant5@example.com",
+            "contact_number": "0917594405",
+            "status": "rejected",
+            "submitted_documents": 1,
+            "scheduled_date": "2023-08-12",
+            "created_at": "2022-12-03 13:33:55"
+        },
+        {
+            "id": 6,
+            "user_id": 6,
+            "full_name": "Applicant 6",
+            "email": "applicant6@example.com",
+            "contact_number": "0917598449",
+            "status": "rejected",
+            "submitted_documents": 0,
+            "scheduled_date": "2023-06-25",
+            "created_at": "2022-07-10 17:26:40"
+        },
+        {
+            "id": 7,
+            "user_id": 1,
+            "full_name": "Applicant 7",
+            "email": "applicant7@example.com",
+            "contact_number": "0917507822",
+            "status": "rejected",
+            "submitted_documents": 1,
+            "scheduled_date": "2023-03-13",
+            "created_at": "2022-11-23 02:52:19"
+        },
+        {
+            "id": 8,
+            "user_id": 1,
+            "full_name": "Applicant 8",
+            "email": "applicant8@example.com",
+            "contact_number": "0917904323",
+            "status": "approved",
+            "submitted_documents": 1,
+            "scheduled_date": null,
+            "created_at": "2022-12-01 09:31:24"
+        },
+        {
+            "id": 9,
+            "user_id": 1,
+            "full_name": "Applicant 9",
+            "email": "applicant9@example.com",
+            "contact_number": "0917744262",
+            "status": "rejected",
+            "submitted_documents": 0,
+            "scheduled_date": "2023-10-31",
+            "created_at": "2022-09-24 21:26:28"
+        },
+        {
+            "id": 10,
+            "user_id": 8,
+            "full_name": "Applicant 10",
+            "email": "applicant10@example.com",
+            "contact_number": "0917532055",
+            "status": "pending",
+            "submitted_documents": 1,
+            "scheduled_date": "2023-05-02",
+            "created_at": "2023-04-11 23:23:56"
+        },
+        {
+            "id": 11,
+            "user_id": 3,
+            "full_name": "Applicant 11",
+            "email": "applicant11@example.com",
+            "contact_number": "0917201247",
+            "status": "interview",
+            "submitted_documents": 0,
+            "scheduled_date": "2023-02-28",
+            "created_at": "2023-10-12 08:03:28"
+        },
+        {
+            "id": 12,
+            "user_id": 10,
+            "full_name": "Applicant 12",
+            "email": "applicant12@example.com",
+            "contact_number": "0917985741",
+            "status": "interview",
+            "submitted_documents": 0,
+            "scheduled_date": null,
+            "created_at": "2022-05-07 15:56:05"
+        },
+        {
+            "id": 13,
+            "user_id": 1,
+            "full_name": "Applicant 13",
+            "email": "applicant13@example.com",
+            "contact_number": "0917649704",
+            "status": "approved",
+            "submitted_documents": 0,
+            "scheduled_date": "2023-12-30",
+            "created_at": "2023-07-19 07:52:50"
+        },
+        {
+            "id": 14,
+            "user_id": 6,
+            "full_name": "Applicant 14",
+            "email": "applicant14@example.com",
+            "contact_number": "0917501680",
+            "status": "rejected",
+            "submitted_documents": 1,
+            "scheduled_date": null,
+            "created_at": "2023-07-13 04:25:16"
+        },
+        {
+            "id": 15,
+            "user_id": 5,
+            "full_name": "Applicant 15",
+            "email": "applicant15@example.com",
+            "contact_number": "0917210533",
+            "status": "rejected",
+            "submitted_documents": 0,
+            "scheduled_date": "2023-02-03",
+            "created_at": "2023-09-27 01:44:47"
+        },
+        {
+            "id": 16,
+            "user_id": 9,
+            "full_name": "Applicant 16",
+            "email": "applicant16@example.com",
+            "contact_number": "0917522728",
+            "status": "approved",
+            "submitted_documents": 1,
+            "scheduled_date": "2023-09-15",
+            "created_at": "2022-10-22 13:23:04"
+        },
+        {
+            "id": 17,
+            "user_id": 4,
+            "full_name": "Applicant 17",
+            "email": "applicant17@example.com",
+            "contact_number": "0917194544",
+            "status": "approved",
+            "submitted_documents": 1,
+            "scheduled_date": "2023-05-24",
+            "created_at": "2023-09-05 05:50:25"
+        },
+        {
+            "id": 18,
+            "user_id": 9,
+            "full_name": "Applicant 18",
+            "email": "applicant18@example.com",
+            "contact_number": "0917360523",
+            "status": "interview",
+            "submitted_documents": 1,
+            "scheduled_date": null,
+            "created_at": "2022-11-22 17:40:50"
+        },
+        {
+            "id": 19,
+            "user_id": 6,
+            "full_name": "Applicant 19",
+            "email": "applicant19@example.com",
+            "contact_number": "0917103001",
+            "status": "rejected",
+            "submitted_documents": 1,
+            "scheduled_date": "2023-01-30",
+            "created_at": "2022-01-24 11:55:37"
+        },
+        {
+            "id": 20,
+            "user_id": 2,
+            "full_name": "Applicant 20",
+            "email": "applicant20@example.com",
+            "contact_number": "0917418212",
+            "status": "interview",
+            "submitted_documents": 0,
+            "scheduled_date": "2023-12-10",
+            "created_at": "2023-12-15 21:23:59"
+        }
+    ],
+    "document_uploads": [
+        {
+            "id": 1,
+            "application_id": 18,
+            "file_name": "document1.pdf",
+            "file_path": "uploads/document1.pdf",
+            "uploaded_at": "2023-07-13 23:59:25"
+        },
+        {
+            "id": 2,
+            "application_id": 4,
+            "file_name": "document2.pdf",
+            "file_path": "uploads/document2.pdf",
+            "uploaded_at": "2023-02-26 04:20:21"
+        },
+        {
+            "id": 3,
+            "application_id": 7,
+            "file_name": "document3.pdf",
+            "file_path": "uploads/document3.pdf",
+            "uploaded_at": "2023-04-12 16:05:05"
+        },
+        {
+            "id": 4,
+            "application_id": 5,
+            "file_name": "document4.pdf",
+            "file_path": "uploads/document4.pdf",
+            "uploaded_at": "2023-10-09 05:29:20"
+        },
+        {
+            "id": 5,
+            "application_id": 4,
+            "file_name": "document5.pdf",
+            "file_path": "uploads/document5.pdf",
+            "uploaded_at": "2023-06-27 19:11:21"
+        },
+        {
+            "id": 6,
+            "application_id": 14,
+            "file_name": "document6.pdf",
+            "file_path": "uploads/document6.pdf",
+            "uploaded_at": "2023-01-15 16:16:49"
+        },
+        {
+            "id": 7,
+            "application_id": 1,
+            "file_name": "document7.pdf",
+            "file_path": "uploads/document7.pdf",
+            "uploaded_at": "2023-07-06 10:27:51"
+        },
+        {
+            "id": 8,
+            "application_id": 5,
+            "file_name": "document8.pdf",
+            "file_path": "uploads/document8.pdf",
+            "uploaded_at": "2023-06-26 02:45:48"
+        },
+        {
+            "id": 9,
+            "application_id": 4,
+            "file_name": "document9.pdf",
+            "file_path": "uploads/document9.pdf",
+            "uploaded_at": "2023-11-12 20:54:25"
+        },
+        {
+            "id": 10,
+            "application_id": 3,
+            "file_name": "document10.pdf",
+            "file_path": "uploads/document10.pdf",
+            "uploaded_at": "2023-05-20 19:01:31"
+        },
+        {
+            "id": 11,
+            "application_id": 4,
+            "file_name": "document11.pdf",
+            "file_path": "uploads/document11.pdf",
+            "uploaded_at": "2023-09-24 20:40:01"
+        },
+        {
+            "id": 12,
+            "application_id": 12,
+            "file_name": "document12.pdf",
+            "file_path": "uploads/document12.pdf",
+            "uploaded_at": "2023-07-08 18:46:34"
+        },
+        {
+            "id": 13,
+            "application_id": 10,
+            "file_name": "document13.pdf",
+            "file_path": "uploads/document13.pdf",
+            "uploaded_at": "2023-07-21 21:19:53"
+        },
+        {
+            "id": 14,
+            "application_id": 18,
+            "file_name": "document14.pdf",
+            "file_path": "uploads/document14.pdf",
+            "uploaded_at": "2023-04-01 01:58:49"
+        },
+        {
+            "id": 15,
+            "application_id": 7,
+            "file_name": "document15.pdf",
+            "file_path": "uploads/document15.pdf",
+            "uploaded_at": "2023-01-03 02:20:47"
+        },
+        {
+            "id": 16,
+            "application_id": 18,
+            "file_name": "document16.pdf",
+            "file_path": "uploads/document16.pdf",
+            "uploaded_at": "2023-11-03 07:09:14"
+        },
+        {
+            "id": 17,
+            "application_id": 6,
+            "file_name": "document17.pdf",
+            "file_path": "uploads/document17.pdf",
+            "uploaded_at": "2023-04-28 00:41:02"
+        },
+        {
+            "id": 18,
+            "application_id": 19,
+            "file_name": "document18.pdf",
+            "file_path": "uploads/document18.pdf",
+            "uploaded_at": "2023-09-29 11:53:16"
+        },
+        {
+            "id": 19,
+            "application_id": 5,
+            "file_name": "document19.pdf",
+            "file_path": "uploads/document19.pdf",
+            "uploaded_at": "2023-04-04 01:58:52"
+        },
+        {
+            "id": 20,
+            "application_id": 19,
+            "file_name": "document20.pdf",
+            "file_path": "uploads/document20.pdf",
+            "uploaded_at": "2023-06-06 15:49:50"
+        }
+    ],
+    "incident_logs": [
+        {
+            "id": 1,
+            "reported_by": 9,
+            "incident_type": "Earthquake",
+            "description": "Description of incident 1",
+            "status": "pending",
+            "location": "Location 1",
+            "incident_date": "2023-02-27 16:22:55",
+            "created_at": "2022-03-05 14:53:26"
+        },
+        {
+            "id": 2,
+            "reported_by": 5,
+            "incident_type": "Fire",
+            "description": "Description of incident 2",
+            "status": "resolved",
+            "location": "Location 2",
+            "incident_date": "2023-03-30 20:38:37",
+            "created_at": "2022-10-15 06:31:31"
+        },
+        {
+            "id": 3,
+            "reported_by": 9,
+            "incident_type": "Earthquake",
+            "description": "Description of incident 3",
+            "status": "closed",
+            "location": "Location 3",
+            "incident_date": "2023-10-31 11:05:10",
+            "created_at": "2022-04-21 04:10:06"
+        },
+        {
+            "id": 4,
+            "reported_by": 6,
+            "incident_type": "Earthquake",
+            "description": "Description of incident 4",
+            "status": "resolved",
+            "location": "Location 4",
+            "incident_date": "2023-06-02 13:06:54",
+            "created_at": "2023-06-14 12:38:50"
+        },
+        {
+            "id": 5,
+            "reported_by": 9,
+            "incident_type": "Fire",
+            "description": "Description of incident 5",
+            "status": "closed",
+            "location": "Location 5",
+            "incident_date": "2023-05-03 21:21:52",
+            "created_at": "2022-01-28 04:11:53"
+        },
+        {
+            "id": 6,
+            "reported_by": 1,
+            "incident_type": "Earthquake",
+            "description": "Description of incident 6",
+            "status": "pending",
+            "location": "Location 6",
+            "incident_date": "2023-11-03 01:17:24",
+            "created_at": "2022-05-31 21:19:21"
+        },
+        {
+            "id": 7,
+            "reported_by": 1,
+            "incident_type": "Flood",
+            "description": "Description of incident 7",
+            "status": "closed",
+            "location": "Location 7",
+            "incident_date": "2023-11-10 10:11:13",
+            "created_at": "2022-05-02 17:29:33"
+        },
+        {
+            "id": 8,
+            "reported_by": 1,
+            "incident_type": "Flood",
+            "description": "Description of incident 8",
+            "status": "resolved",
+            "location": "Location 8",
+            "incident_date": "2023-06-08 02:59:05",
+            "created_at": "2023-03-22 23:28:39"
+        },
+        {
+            "id": 9,
+            "reported_by": 5,
+            "incident_type": "Flood",
+            "description": "Description of incident 9",
+            "status": "closed",
+            "location": "Location 9",
+            "incident_date": "2023-05-14 08:51:05",
+            "created_at": "2023-05-19 20:34:57"
+        },
+        {
+            "id": 10,
+            "reported_by": 8,
+            "incident_type": "Accident",
+            "description": "Description of incident 10",
+            "status": "closed",
+            "location": "Location 10",
+            "incident_date": "2023-08-17 21:53:08",
+            "created_at": "2023-05-03 23:52:28"
+        },
+        {
+            "id": 11,
+            "reported_by": 10,
+            "incident_type": "Earthquake",
+            "description": "Description of incident 11",
+            "status": "pending",
+            "location": "Location 11",
+            "incident_date": "2023-10-07 03:12:13",
+            "created_at": "2023-08-23 05:24:41"
+        },
+        {
+            "id": 12,
+            "reported_by": 7,
+            "incident_type": "Fire",
+            "description": "Description of incident 12",
+            "status": "pending",
+            "location": "Location 12",
+            "incident_date": "2023-05-12 17:26:35",
+            "created_at": "2023-05-28 13:23:54"
+        },
+        {
+            "id": 13,
+            "reported_by": 7,
+            "incident_type": "Flood",
+            "description": "Description of incident 13",
+            "status": "resolved",
+            "location": "Location 13",
+            "incident_date": "2023-08-21 18:32:44",
+            "created_at": "2022-07-10 09:53:46"
+        },
+        {
+            "id": 14,
+            "reported_by": 4,
+            "incident_type": "Fire",
+            "description": "Description of incident 14",
+            "status": "resolved",
+            "location": "Location 14",
+            "incident_date": "2023-08-16 03:26:53",
+            "created_at": "2023-06-30 12:52:02"
+        },
+        {
+            "id": 15,
+            "reported_by": 6,
+            "incident_type": "Accident",
+            "description": "Description of incident 15",
+            "status": "pending",
+            "location": "Location 15",
+            "incident_date": "2023-06-17 05:00:29",
+            "created_at": "2023-04-20 05:52:50"
+        }
+    ],
+    "emergency_alerts": [
+        {
+            "id": 1,
+            "title": "Alert 1",
+            "message": "Message content of alert 1",
+            "created_by": 5,
+            "created_at": "2023-04-27 05:10:39"
+        },
+        {
+            "id": 2,
+            "title": "Alert 2",
+            "message": "Message content of alert 2",
+            "created_by": 1,
+            "created_at": "2023-06-16 23:00:13"
+        },
+        {
+            "id": 3,
+            "title": "Alert 3",
+            "message": "Message content of alert 3",
+            "created_by": 1,
+            "created_at": "2023-10-09 01:18:58"
+        },
+        {
+            "id": 4,
+            "title": "Alert 4",
+            "message": "Message content of alert 4",
+            "created_by": 1,
+            "created_at": "2023-12-14 04:05:01"
+        },
+        {
+            "id": 5,
+            "title": "Alert 5",
+            "message": "Message content of alert 5",
+            "created_by": 8,
+            "created_at": "2023-03-06 06:48:54"
+        },
+        {
+            "id": 6,
+            "title": "Alert 6",
+            "message": "Message content of alert 6",
+            "created_by": 5,
+            "created_at": "2023-12-12 03:45:08"
+        },
+        {
+            "id": 7,
+            "title": "Alert 7",
+            "message": "Message content of alert 7",
+            "created_by": 4,
+            "created_at": "2023-07-08 08:58:51"
+        },
+        {
+            "id": 8,
+            "title": "Alert 8",
+            "message": "Message content of alert 8",
+            "created_by": 5,
+            "created_at": "2023-09-08 15:54:34"
+        },
+        {
+            "id": 9,
+            "title": "Alert 9",
+            "message": "Message content of alert 9",
+            "created_by": 9,
+            "created_at": "2023-02-08 16:30:40"
+        },
+        {
+            "id": 10,
+            "title": "Alert 10",
+            "message": "Message content of alert 10",
+            "created_by": 3,
+            "created_at": "2023-12-25 17:31:22"
+        }
+    ],
+    "analytics_logs": [
+        {
+            "id": 1,
+            "event_name": "Login",
+            "event_data": "{\"detail\": \"Event data for log 1\"}",
+            "created_at": "2023-09-04 17:28:02"
+        },
+        {
+            "id": 2,
+            "event_name": "Login",
+            "event_data": "{\"detail\": \"Event data for log 2\"}",
+            "created_at": "2023-07-01 17:20:57"
+        },
+        {
+            "id": 3,
+            "event_name": "Login",
+            "event_data": "{\"detail\": \"Event data for log 3\"}",
+            "created_at": "2022-07-05 07:58:31"
+        },
+        {
+            "id": 4,
+            "event_name": "Login",
+            "event_data": "{\"detail\": \"Event data for log 4\"}",
+            "created_at": "2023-04-15 22:29:44"
+        },
+        {
+            "id": 5,
+            "event_name": "Logout",
+            "event_data": "{\"detail\": \"Event data for log 5\"}",
+            "created_at": "2022-05-02 10:11:30"
+        },
+        {
+            "id": 6,
+            "event_name": "Document Upload",
+            "event_data": "{\"detail\": \"Event data for log 6\"}",
+            "created_at": "2023-02-20 23:01:45"
+        },
+        {
+            "id": 7,
+            "event_name": "Login",
+            "event_data": "{\"detail\": \"Event data for log 7\"}",
+            "created_at": "2023-12-30 20:58:24"
+        },
+        {
+            "id": 8,
+            "event_name": "Document Upload",
+            "event_data": "{\"detail\": \"Event data for log 8\"}",
+            "created_at": "2022-01-14 19:59:22"
+        },
+        {
+            "id": 9,
+            "event_name": "Document Upload",
+            "event_data": "{\"detail\": \"Event data for log 9\"}",
+            "created_at": "2023-06-24 01:45:11"
+        },
+        {
+            "id": 10,
+            "event_name": "Login",
+            "event_data": "{\"detail\": \"Event data for log 10\"}",
+            "created_at": "2022-09-17 03:38:38"
+        },
+        {
+            "id": 11,
+            "event_name": "Logout",
+            "event_data": "{\"detail\": \"Event data for log 11\"}",
+            "created_at": "2022-10-04 21:16:09"
+        },
+        {
+            "id": 12,
+            "event_name": "Application Submission",
+            "event_data": "{\"detail\": \"Event data for log 12\"}",
+            "created_at": "2022-04-15 07:13:25"
+        },
+        {
+            "id": 13,
+            "event_name": "Document Upload",
+            "event_data": "{\"detail\": \"Event data for log 13\"}",
+            "created_at": "2023-06-16 06:35:16"
+        },
+        {
+            "id": 14,
+            "event_name": "Document Upload",
+            "event_data": "{\"detail\": \"Event data for log 14\"}",
+            "created_at": "2023-06-01 01:02:28"
+        },
+        {
+            "id": 15,
+            "event_name": "Document Upload",
+            "event_data": "{\"detail\": \"Event data for log 15\"}",
+            "created_at": "2023-09-19 21:21:38"
+        }
+    ]
+}
