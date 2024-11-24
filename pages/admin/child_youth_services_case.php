@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
@@ -337,44 +338,63 @@ function logAudit($userId, $action, $details = null)
 
     // Submit edits to a case
     function submitEditCaseForm() {
-        const caseForm = {
-            id: $('#editCaseId').val(),
-            case_title: $('#editCaseTitle').val(),
-            case_type: $('#editCaseType').val(),
-            guardian_name: $('#editGuardianName').val(),
-            guardian_contact: $('#editGuardianContact').val(),
-            notes: $('#editCaseNotes').val(),
-            status: $('#editCaseStatus').val(),
-        };
+    const caseForm = {
+        id: $('#editCaseId').val(),
+        case_title: $('#editCaseTitle').val(),
+        case_type: $('#editCaseType').val(),
+        guardian_name: $('#editGuardianName').val(),
+        guardian_contact: $('#editGuardianContact').val(),
+        notes: $('#editCaseNotes').val(),
+        status: $('#editCaseStatus').val(),
+    };
 
-        $.post('../../../backend/admin/child_youth_services_case/edit_case.php', caseForm)
-            .done(response => {
-                const data = JSON.parse(response);
-                alert(data.message);
-                if (data.success) {
-                    $('#editCaseModal').modal('hide');
-                    fetchCases();
-                }
-            })
-            .fail(() => alert('Failed to update case.'));
+    $.post('../../../backend/admin/child_youth_services_case/edit_case.php', caseForm)
+        .done(response => {
+            console.log("Edit Case Response:", response); // Log response
+            const data = JSON.parse(response);
+            alert(data.message);
+            if (data.success) {
+                $('#editCaseModal').modal('hide');
+                fetchCases();
+            }
+        })
+        .fail(error => {
+            console.error("Edit Case Error:", error);
+            alert('Failed to update case.');
+        });
     }
 
     // Delete case
     function deleteCase(caseId) {
         if (!confirm('Are you sure you want to delete this case?')) return;
-
-        $.post('../../../backend/admin/child_youth_services_case/delete_case.php', {
-                id: caseId
-            })
+    
+        $.post('../../../backend/admin/child_youth_services_case/delete_case.php', { id: caseId })
             .done(response => {
-                const data = JSON.parse(response);
-                alert(data.message);
-                if (data.success) {
-                    fetchCases();
+                console.log("Raw Response:", response); // Log raw response
+    
+                try {
+                    const data = JSON.parse(response); // Parse JSON response
+                    console.log("Parsed Response:", data);
+    
+                    if (data.success) {
+                        alert(data.message);
+                        fetchCases(); // Refresh the case list
+                    } else {
+                        alert(data.message || 'Failed to delete case.');
+                    }
+                } catch (error) {
+                    console.error("JSON Parse Error:", error);
+                    alert('Unexpected server response. Failed to delete case.');
                 }
             })
-            .fail(() => alert('Failed to delete case.'));
+            .fail(error => {
+                console.error("AJAX Error:", error); // Log any AJAX errors
+                alert('Failed to delete case.');
+            });
     }
+
+
+
 
     // Update case status
     function updateCaseStatus(caseId, status) {

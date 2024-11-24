@@ -1,5 +1,16 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 require '../../../database/connection.php';
+require '../../../database/utils.php'; // Corrected file path
+
+session_start();
+
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    echo json_encode(['success' => false, 'message' => 'Unauthorized access.']);
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $caseId = intval($_POST['id']);
@@ -9,8 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $guardianContact = htmlspecialchars(strip_tags($_POST['guardian_contact']));
     $notes = htmlspecialchars(strip_tags($_POST['notes']));
     $status = htmlspecialchars(strip_tags($_POST['status']));
-    logAudit($_SESSION['user_id'], "Edited case titled '$caseTitle'", "Case ID: $caseId");
-
 
     if (empty($caseTitle) || empty($caseType) || empty($status)) {
         echo json_encode(['success' => false, 'message' => 'Required fields are missing.']);
@@ -34,11 +43,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'id' => $caseId,
         ]);
 
+        logAudit($_SESSION['user_id'], "Edited case titled '$caseTitle'", "Case ID: $caseId");
         echo json_encode(['success' => true, 'message' => 'Case updated successfully.']);
     } catch (PDOException $e) {
         error_log("Database error: " . $e->getMessage());
-        echo json_encode(['success' => false, 'message' => 'Database error.']);
+        echo json_encode(['success' => false, 'message' => 'Database error occurred.']);
     }
 } else {
     echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
 }
+?>
