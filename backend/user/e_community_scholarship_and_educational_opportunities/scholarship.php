@@ -5,6 +5,16 @@ require '../../../database/connection.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userId = $_SESSION['user_id'] ?? null;
 
+    // Check available slots
+    $slotStmt = $conn->prepare("SELECT available_slots FROM interview_slots LIMIT 1");
+    $slotStmt->execute();
+    $availableSlots = $slotStmt->fetchColumn();
+
+    if ($availableSlots <= 0) {
+        echo json_encode(['success' => false, 'message' => 'No slots are currently available.']);
+        exit;
+    }
+
     // Validate file upload
     if (!isset($_FILES['documents']) || $_FILES['documents']['error'] !== UPLOAD_ERR_OK) {
         echo json_encode(['success' => false, 'message' => 'File upload failed. Please try again.']);
@@ -36,15 +46,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        // Update user scholarship status
+        $conn->beginTransaction();
+
+        // Update user's application status
         $stmt = $conn->prepare("UPDATE users SET scholarship_status = 'applied', application_date = NOW(), document_path = :filePath WHERE id = :userId");
         $stmt->execute([
             ':filePath' => $filePath,
             ':userId' => $userId
         ]);
 
+        // Decrease available slots
+        $slotUpdateStmt = $conn->prepare("UPDATE interview_slots SET available_slots = available_slots - 1 WHERE available_slots > 0");
+        $slotUpdateStmt->execute();
+
+        $conn->commit();
+
         echo json_encode(['success' => true, 'message' => 'Scholarship application submitted successfully.']);
     } catch (Exception $e) {
+        $conn->rollBack();
         echo json_encode(['success' => false, 'message' => 'Failed to process application: ' . $e->getMessage()]);
     }
     exit;

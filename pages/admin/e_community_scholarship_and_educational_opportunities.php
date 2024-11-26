@@ -18,6 +18,13 @@ $stmt = $conn->prepare("
 ");
 $stmt->execute();
 $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch available slots
+$slotStmt = $conn->prepare("SELECT total_slots, available_slots FROM interview_slots LIMIT 1");
+$slotStmt->execute();
+$slotData = $slotStmt->fetch(PDO::FETCH_ASSOC);
+$totalSlots = $slotData['total_slots'] ?? 0;
+$availableSlots = $slotData['available_slots'] ?? 0;
 ?>
 
 <?php include '../../include/header.php'; ?>
@@ -26,6 +33,11 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <div class="container-fluid mt-4">
     <h1 class="mb-4">Scholarship Applications</h1>
+
+    <!-- Display Slot Information -->
+    <div class="alert alert-info">
+        <strong>Interview Slots:</strong> <?= $availableSlots ?> / <?= $totalSlots ?> available.
+    </div>
 
     <!-- Responsive Table -->
     <div class="table-responsive">
@@ -45,7 +57,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <tr>
                         <td><?= htmlspecialchars($application['name']); ?></td>
                         <td><?= htmlspecialchars($application['email']); ?></td>
-                        <td><?= $application['contact_number']; ?></td>
+                        <td><?= htmlspecialchars($application['contact_number']); ?></td>
                         <td><?= ucfirst($application['scholarship_status']); ?></td>
                         <td><?= htmlspecialchars($application['application_date']); ?></td>
                         <td>
@@ -54,11 +66,14 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?php if ($application['scholarship_status'] === 'applied') : ?>
                                     <button class="btn btn-success btn-sm" onclick="updateStatus(<?= $application['id']; ?>, 'approved')">Approve</button>
                                     <button class="btn btn-danger btn-sm" onclick="updateStatus(<?= $application['id']; ?>, 'rejected')">Reject</button>
-                                    <button class="btn btn-primary btn-sm" onclick="openScheduleModal(<?= $application['id']; ?>)">Schedule Interview</button>
+                                    <?php if ($availableSlots > 0): ?>
+                                        <button class="btn btn-primary btn-sm" onclick="openScheduleModal(<?= $application['id']; ?>)">Schedule Interview</button>
+                                    <?php else: ?>
+                                        <button class="btn btn-secondary btn-sm" disabled>No Slots Available</button>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
                         </td>
-
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -99,14 +114,11 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="modal-body">
                 <form id="scheduleForm">
-                    <!-- Hidden Input for User ID -->
                     <input type="hidden" id="scheduleUserId" name="user_id">
-                    <!-- Date Input -->
                     <div class="mb-3">
                         <label for="scheduleDate" class="form-label">Select Date and Time</label>
                         <input type="datetime-local" id="scheduleDate" name="date" class="form-control" required>
                     </div>
-                    <!-- Submit Button -->
                     <button type="button" class="btn btn-primary w-100" onclick="submitScheduleForm()">Schedule</button>
                 </form>
             </div>
@@ -115,8 +127,8 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <?php include '../../include/footer.php'; ?>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function updateStatus(userId, status) {
         if (!confirm(`Are you sure you want to mark this application as ${status}?`)) return;
@@ -126,26 +138,19 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 status: status
             })
             .done(function(response) {
-                try {
-                    const data = JSON.parse(response);
-                    alert(data.message);
-                    if (data.success) {
-                        location.reload();
-                    }
-                } catch (error) {
-                    alert('Failed to process response: ' + error.message);
+                const data = JSON.parse(response);
+                alert(data.message);
+                if (data.success) {
+                    location.reload();
                 }
             })
             .fail(function() {
-                alert('Failed to update status. Please check the server.');
+                alert('Failed to update status.');
             });
     }
 
     function openScheduleModal(userId) {
-        // Set the user ID in the hidden input field
         document.getElementById('scheduleUserId').value = userId;
-
-        // Show the schedule modal
         $('#scheduleModal').modal('show');
     }
 
@@ -153,7 +158,6 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
         const dateInput = document.getElementById('scheduleDate');
         const localDate = new Date(dateInput.value);
 
-        // Convert local date to UTC
         const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000)
             .toISOString()
             .slice(0, 19)
@@ -161,50 +165,39 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         const formData = {
             user_id: document.getElementById('scheduleUserId').value,
-            date: utcDate, // Ensure UTC date is sent in 'Y-m-d H:i:s' format
+            date: utcDate,
         };
 
         $.post('../../../backend/admin/e_community_scholarship_and_educational_opportunities/schedule_interview.php', formData)
             .done(function(response) {
-                try {
-                    const data = JSON.parse(response);
-                    if (data.success) {
-                        alert(data.message);
-                        $('#scheduleModal').modal('hide');
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                } catch (error) {
-                    alert('Invalid response format. Please try again.');
+                const data = JSON.parse(response);
+                alert(data.message);
+                if (data.success) {
+                    $('#scheduleModal').modal('hide');
+                    location.reload();
                 }
             })
             .fail(function() {
-                alert('Failed to communicate with the server. Please check your connection.');
+                alert('Failed to schedule interview.');
             });
     }
 
     function viewApplication(userId) {
-        console.log('Fetching application details...');
         $.get('../../../backend/admin/e_community_scholarship_and_educational_opportunities/view_application.php', {
                 id: userId
             })
             .done(function(response) {
-                try {
-                    const data = JSON.parse(response);
-                    if (data.success) {
-                        $('#viewName').text(data.application.name);
-                        $('#viewEmail').text(data.application.email);
-                        $('#viewContact').text(data.application.contact_number);
-                        $('#viewStatus').text(data.application.scholarship_status);
-                        $('#viewDate').text(data.application.application_date);
-                        $('#viewDocument').attr('href', data.application.document_path);
-                        $('#viewModal').modal('show');
-                    } else {
-                        alert(data.message);
-                    }
-                } catch (error) {
-                    alert('Error parsing response: ' + error.message);
+                const data = JSON.parse(response);
+                if (data.success) {
+                    $('#viewName').text(data.application.name);
+                    $('#viewEmail').text(data.application.email);
+                    $('#viewContact').text(data.application.contact_number);
+                    $('#viewStatus').text(data.application.scholarship_status);
+                    $('#viewDate').text(data.application.application_date);
+                    $('#viewDocument').attr('href', data.application.document_path);
+                    $('#viewModal').modal('show');
+                } else {
+                    alert(data.message);
                 }
             })
             .fail(function() {
