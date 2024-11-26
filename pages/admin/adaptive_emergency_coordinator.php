@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 require '../../database/connection.php';
 
 // Fetch emergency alerts
-$stmt = $conn->prepare("SELECT emergency_alerts.title, emergency_alerts.message, users.name AS created_by, emergency_alerts.created_at 
+$stmt = $conn->prepare("SELECT emergency_alerts.title, emergency_alerts.message, emergency_alerts.media_type, emergency_alerts.media_path, users.name AS created_by, emergency_alerts.created_at 
                         FROM emergency_alerts 
                         JOIN users ON emergency_alerts.created_by = users.id 
                         ORDER BY emergency_alerts.created_at DESC");
@@ -23,16 +23,6 @@ $stmt = $conn->prepare("SELECT il.*, u.name AS reported_by_name FROM incident_lo
                         ORDER BY il.created_at DESC");
 $stmt->execute();
 $incidents = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-
-
-// Function to fetch incident counts for Highcharts
-function fetchCount($conn, $query)
-{
-    $stmt = $conn->prepare($query);
-    $stmt->execute();
-    return $stmt->fetch(PDO::FETCH_COLUMN) ?? 0;
-}
 ?>
 
 <?php include '../../include/header.php'; ?>
@@ -46,9 +36,11 @@ function fetchCount($conn, $query)
         <!-- Create Alert -->
         <div class="col-lg-6 col-md-12 mb-4">
             <h3>Create Emergency Alert</h3>
-            <form id="alertForm">
+            <form id="alertForm" enctype="multipart/form-data">
                 <input type="text" name="title" placeholder="Title" required class="form-control mb-2">
                 <textarea name="message" placeholder="Message" required class="form-control mb-2"></textarea>
+                <label for="alert_media" class="form-label">Upload Picture/Video</label>
+                <input type="file" name="media" id="alert_media" class="form-control mb-2" accept="image/*,video/*">
                 <button type="submit" class="btn btn-primary btn-block">Send Alert</button>
             </form>
         </div>
@@ -56,10 +48,12 @@ function fetchCount($conn, $query)
         <!-- Log an Incident -->
         <div class="col-lg-6 col-md-12 mb-4">
             <h3>Log an Incident</h3>
-            <form id="incidentForm">
+            <form id="incidentForm" enctype="multipart/form-data">
                 <input type="text" name="incident_type" placeholder="Incident Type (e.g., Fire)" required class="form-control mb-2">
                 <textarea name="description" placeholder="Description" required class="form-control mb-2"></textarea>
                 <input type="text" name="location" placeholder="Location" required class="form-control mb-2">
+                <label for="incident_media" class="form-label">Upload Picture/Video</label>
+                <input type="file" name="media" id="incident_media" class="form-control mb-2" accept="image/*,video/*">
                 <button type="submit" class="btn btn-primary btn-block">Log Incident</button>
             </form>
         </div>
@@ -74,6 +68,7 @@ function fetchCount($conn, $query)
                     <tr>
                         <th>Title</th>
                         <th>Message</th>
+                        <th>Media</th>
                         <th>Created By</th>
                         <th>Created At</th>
                     </tr>
@@ -83,6 +78,20 @@ function fetchCount($conn, $query)
                         <tr>
                             <td><?= htmlspecialchars($alert['title']); ?></td>
                             <td><?= htmlspecialchars($alert['message']); ?></td>
+                            <td>
+                                <?php if ($alert['media_type'] === 'image') : ?>
+                                    <img src="<?= htmlspecialchars($alert['media_path']); ?>" alt="Alert Media"
+                                        class="img-thumbnail preview-image" style="max-width: 100px; cursor: pointer;"
+                                        data-path="<?= htmlspecialchars($alert['media_path']); ?>">
+                                <?php elseif ($alert['media_type'] === 'video') : ?>
+                                    <video controls style="max-width: 100px;">
+                                        <source src="<?= htmlspecialchars($alert['media_path']); ?>" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                <?php else : ?>
+                                    N/A
+                                <?php endif; ?>
+                            </td>
                             <td><?= htmlspecialchars($alert['created_by']); ?></td>
                             <td><?= htmlspecialchars($alert['created_at']); ?></td>
                         </tr>
@@ -102,6 +111,7 @@ function fetchCount($conn, $query)
                         <th>Type</th>
                         <th>Description</th>
                         <th>Location</th>
+                        <th>Media</th>
                         <th>Reported By</th>
                         <th>Status</th>
                         <th>Date</th>
@@ -114,8 +124,23 @@ function fetchCount($conn, $query)
                             <td><?= htmlspecialchars($incident['incident_type']); ?></td>
                             <td><?= htmlspecialchars($incident['description']); ?></td>
                             <td><?= htmlspecialchars($incident['location']); ?></td>
+                            <td>
+                                <?php if ($incident['media_type'] === 'image') : ?>
+                                    <img src="../../<?= htmlspecialchars($incident['media_path']); ?>" alt="Incident Media"
+                                        class="img-thumbnail preview-image" style="max-width: 100px; cursor: pointer;"
+                                        data-path="../../<?= htmlspecialchars($incident['media_path']); ?>">
+                                <?php elseif ($incident['media_type'] === 'video') : ?>
+                                    <video controls style="max-width: 100px;">
+                                        <source src="../../<?= htmlspecialchars($incident['media_path']); ?>" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                <?php else : ?>
+                                    N/A
+                                <?php endif; ?>
+                            </td>
                             <td><?= htmlspecialchars($incident['reported_by_name']); ?></td>
                             <td>
+                                <!-- Dropdown for status -->
                                 <select name="status" class="form-control status-dropdown" data-id="<?= $incident['id']; ?>">
                                     <option value="pending" <?= $incident['status'] === 'pending' ? 'selected' : ''; ?>>Pending</option>
                                     <option value="resolved" <?= $incident['status'] === 'resolved' ? 'selected' : ''; ?>>Resolved</option>
@@ -132,99 +157,81 @@ function fetchCount($conn, $query)
             </table>
         </div>
     </div>
-
 </div>
 
-<div id="incidentChart"></div>
+<!-- Modal for Image/Video Previews -->
+<div id="mediaPreviewModal" class="modal fade" tabindex="-1" aria-labelledby="mediaPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mediaPreviewModalLabel">Media Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="#" alt="Preview" class="img-fluid d-none" style="max-width: 100%; max-height: 500px;">
+                <video id="modalVideo" controls class="d-none" style="max-width: 100%; max-height: 500px;">
+                    <source id="videoSource" src="#" type="video/mp4">
+                </video>
+            </div>
+        </div>
+    </div>
+</div>
 
 <?php include '../../include/footer.php'; ?>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // Handle Create Alert Form Submission
-    $('#alertForm').on('submit', function(e) {
-        e.preventDefault();
-        $.post('../../../backend/admin/adaptive_emergency_coordinator/alerts.php', $(this).serialize(), function(response) {
-            try {
-                const data = JSON.parse(response);
-                alert(data.message);
-                location.reload();
-            } catch (error) {
-                alert('An error occurred.');
-            }
-        });
-    });
+    $(document).ready(function() {
+        // Handle Form Submissions
+        $('#alertForm, #incidentForm').on('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
 
-    // Handle Incident Logging Form Submission
-    $('#incidentForm').on('submit', function(e) {
-        e.preventDefault();
-        $.post('../../../backend/admin/adaptive_emergency_coordinator/incidents.php', $(this).serialize(), function(response) {
-            try {
-                const data = JSON.parse(response);
-                alert(data.message);
-                location.reload();
-            } catch (error) {
-                alert('An error occurred.');
-            }
-        });
-    });
-
-    // Handle Status Update
-    $('.status-dropdown').on('change', function() {
-        const incidentId = $(this).data('id');
-        const status = $(this).val();
-
-        $.post('../../../backend/admin/adaptive_emergency_coordinator/update_status.php', {
-            id: incidentId,
-            status: status
-        }, function(response) {
-            try {
-                const data = JSON.parse(response);
-                alert(data.message);
-                location.reload();
-            } catch (error) {
-                alert('An error occurred.');
-            }
-        });
-    });
-
-    // Chart for Incidents
-    document.addEventListener('DOMContentLoaded', function() {
-        Highcharts.chart('incidentChart', {
-            chart: {
-                type: 'column'
-            },
-            title: {
-                text: 'Incident Status Summary'
-            },
-            xAxis: {
-                categories: ['Pending', 'Resolved', 'Closed']
-            },
-            yAxis: {
-                title: {
-                    text: 'Count'
-                }
-            },
-            series: [{
-                name: 'Incidents',
-                data: [
-                    <?= fetchCount($conn, "SELECT COUNT(*) AS count FROM incident_logs WHERE status = 'pending'"); ?>,
-                    <?= fetchCount($conn, "SELECT COUNT(*) AS count FROM incident_logs WHERE status = 'resolved'"); ?>,
-                    <?= fetchCount($conn, "SELECT COUNT(*) AS count FROM incident_logs WHERE status = 'closed'"); ?>
-                ]
-            }]
-        });
-    });
-
-    // Handle Delete Incident
-    $('.delete-incident').on('click', function() {
-        const incidentId = $(this).data('id');
-        if (confirm('Are you sure you want to delete this incident?')) {
-            $.post(
-                '../../../backend/admin/adaptive_emergency_coordinator/delete_incident.php', {
-                    id: incidentId
+            $.ajax({
+                url: $(this).attr('id') === 'alertForm' ? '../../../backend/admin/adaptive_emergency_coordinator/alerts.php' : '../../../backend/admin/adaptive_emergency_coordinator/incidents.php',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    try {
+                        const data = JSON.parse(response);
+                        alert(data.message);
+                        location.reload();
+                    } catch (error) {
+                        alert('An error occurred.');
+                    }
                 },
-                function(response) {
+                error: function() {
+                    alert('An error occurred while uploading the file.');
+                }
+            });
+        });
+
+        // Preview Modal Logic
+        $(document).on('click', '.preview-image', function() {
+            const mediaPath = $(this).data('path');
+            const isImage = $(this).is('img');
+
+            if (isImage) {
+                $('#modalImage').attr('src', mediaPath).removeClass('d-none');
+                $('#modalVideo').addClass('d-none');
+            } else {
+                $('#videoSource').attr('src', mediaPath);
+                $('#modalVideo').removeClass('d-none');
+                $('#modalImage').addClass('d-none');
+            }
+
+            $('#mediaPreviewModal').modal('show');
+        });
+
+        // Delete Incident
+        $('.delete-incident').on('click', function() {
+            const incidentId = $(this).data('id');
+            if (confirm('Are you sure you want to delete this incident?')) {
+                $.post('../../../backend/admin/adaptive_emergency_coordinator/delete_incident.php', {
+                    id: incidentId
+                }, function(response) {
                     try {
                         const data = JSON.parse(response);
                         alert(data.message);
@@ -234,8 +241,33 @@ function fetchCount($conn, $query)
                     } catch (error) {
                         alert('An error occurred while processing the request.');
                     }
+                });
+            }
+        });
+    });
+
+    $(document).ready(function() {
+        // Handle status update
+        $('.status-dropdown').on('change', function() {
+            const incidentId = $(this).data('id'); // Get the incident ID
+            const status = $(this).val(); // Get the selected status
+
+            $.post('../../../backend/admin/adaptive_emergency_coordinator/update_status.php', {
+                id: incidentId,
+                status: status
+            }, function(response) {
+                try {
+                    const data = JSON.parse(response);
+                    alert(data.message);
+                    if (data.message.includes('successfully')) {
+                        location.reload(); // Optionally reload the page to reflect changes
+                    }
+                } catch (error) {
+                    alert('An error occurred while updating the status.');
                 }
-            );
-        }
+            }).fail(function() {
+                alert('Failed to send request to the server.');
+            });
+        });
     });
 </script>
