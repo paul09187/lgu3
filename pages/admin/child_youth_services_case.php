@@ -122,6 +122,8 @@ function logAudit($userId, $action, $details = null)
             <div class="modal-body">
                 <p><strong>Title:</strong> <span id="caseTitleDetail"></span></p>
                 <p><strong>Type:</strong> <span id="caseTypeDetail"></span></p>
+                <p><strong>User Age:</strong> <span id="viewUserAgeDetail"></span></p>
+                <p><strong>ID File:</strong> <a id="viewUserIdFileLink" href="#" target="_blank">View ID</a></p>
                 <p><strong>Guardian Name:</strong> <span id="guardianNameDetail"></span></p>
                 <p><strong>Guardian Contact:</strong> <span id="guardianContactDetail"></span></p>
                 <p><strong>Status:</strong> <span id="caseStatusDetail"></span></p>
@@ -157,6 +159,17 @@ function logAudit($userId, $action, $details = null)
                             <option value="other">Other</option>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="editUserAge" class="form-label">User Age</label>
+                        <input type="number" id="editUserAge" class="form-control" min="0" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editUserIdFile" class="form-label">Upload New ID (JPEG/PNG)</label>
+                        <input type="file" id="editUserIdFile" class="form-control" accept="image/jpeg,image/png">
+                        <small class="text-muted">Leave blank if no change is required.</small>
+                    </div>
+
                     <div class="mb-3">
                         <label for="editGuardianName" class="form-label">Guardian Name</label>
                         <input type="text" id="editGuardianName" class="form-control">
@@ -303,6 +316,10 @@ function logAudit($userId, $action, $details = null)
                     $('#guardianContactDetail').text(data.case.guardian_contact || 'N/A');
                     $('#caseStatusDetail').text(data.case.status);
                     $('#caseNotesDetail').text(data.case.notes || 'No notes provided.');
+                    $('#viewUserAgeDetail').text(data.case.user_age || 'N/A');
+                    $('#viewUserIdFileLink')
+                        .attr('href', '../../../uploads/user_ids/' + data.case.user_id_file)
+                        .text('View Uploaded ID');
 
                     $('#viewCaseModal').modal('show');
                 } else {
@@ -312,7 +329,7 @@ function logAudit($userId, $action, $details = null)
             .fail(() => alert('Failed to fetch case details.'));
     }
 
-    // Edit case
+    // Edit case details
     function editCase(caseId) {
         $.get('../../../backend/admin/child_youth_services_case/view_case.php', {
                 id: caseId
@@ -325,8 +342,9 @@ function logAudit($userId, $action, $details = null)
                     $('#editCaseType').val(data.case.case_type);
                     $('#editGuardianName').val(data.case.guardian_name || '');
                     $('#editGuardianContact').val(data.case.guardian_contact || '');
-                    $('#editCaseStatus').val(data.case.status);
                     $('#editCaseNotes').val(data.case.notes || '');
+                    $('#editCaseStatus').val(data.case.status);
+                    $('#editUserAge').val(data.case.user_age || '');
 
                     $('#editCaseModal').modal('show');
                 } else {
@@ -336,46 +354,60 @@ function logAudit($userId, $action, $details = null)
             .fail(() => alert('Failed to fetch case details.'));
     }
 
+
     // Submit edits to a case
     function submitEditCaseForm() {
-    const caseForm = {
-        id: $('#editCaseId').val(),
-        case_title: $('#editCaseTitle').val(),
-        case_type: $('#editCaseType').val(),
-        guardian_name: $('#editGuardianName').val(),
-        guardian_contact: $('#editGuardianContact').val(),
-        notes: $('#editCaseNotes').val(),
-        status: $('#editCaseStatus').val(),
-    };
+        const formData = new FormData();
+        formData.append('id', $('#editCaseId').val());
+        formData.append('case_title', $('#editCaseTitle').val());
+        formData.append('case_type', $('#editCaseType').val());
+        formData.append('guardian_name', $('#editGuardianName').val());
+        formData.append('guardian_contact', $('#editGuardianContact').val());
+        formData.append('notes', $('#editCaseNotes').val());
+        formData.append('status', $('#editCaseStatus').val());
+        formData.append('user_age', $('#editUserAge').val());
 
-    $.post('../../../backend/admin/child_youth_services_case/edit_case.php', caseForm)
-        .done(response => {
-            console.log("Edit Case Response:", response); // Log response
-            const data = JSON.parse(response);
-            alert(data.message);
-            if (data.success) {
-                $('#editCaseModal').modal('hide');
-                fetchCases();
-            }
-        })
-        .fail(error => {
-            console.error("Edit Case Error:", error);
-            alert('Failed to update case.');
+        if ($('#editUserIdFile')[0].files.length > 0) {
+            formData.append('user_id_file', $('#editUserIdFile')[0].files[0]);
+        }
+
+        $.ajax({
+            url: '../../../backend/admin/child_youth_services_case/edit_case.php',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: (response) => {
+                console.log("Edit Case Response:", response);
+                const data = JSON.parse(response);
+                alert(data.message);
+                if (data.success) {
+                    $('#editCaseModal').modal('hide');
+                    fetchCases();
+                }
+            },
+            error: (err) => {
+                console.error("Failed to edit case:", err);
+                alert('Failed to edit case.');
+            },
         });
     }
+
 
     // Delete case
     function deleteCase(caseId) {
         if (!confirm('Are you sure you want to delete this case?')) return;
-    
-        $.post('../../../backend/admin/child_youth_services_case/delete_case.php', { id: caseId })
+
+        $.post('../../../backend/admin/child_youth_services_case/delete_case.php', {
+                id: caseId
+            })
             .done(response => {
                 console.log("Raw Response:", response); // Log raw response
-    
+
                 try {
                     const data = JSON.parse(response); // Parse JSON response
                     console.log("Parsed Response:", data);
-    
+
                     if (data.success) {
                         alert(data.message);
                         fetchCases(); // Refresh the case list

@@ -13,10 +13,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
 
     try {
         $stmt = $conn->prepare("
-            SELECT id, case_title, case_type, status, notes, created_at 
-            FROM cases 
-            WHERE id = :id AND created_by = :user_id
-        ");
+        SELECT id, case_title, case_type, status, notes, user_id_file, user_age, created_at 
+        FROM cases 
+        WHERE id = :id AND created_by = :user_id
+    ");
 
         $stmt->execute(['id' => $caseId, 'user_id' => $userId]);
         $case = $stmt->fetch(PDO::FETCH_ASSOC);

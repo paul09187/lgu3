@@ -57,6 +57,18 @@ require '../../database/connection.php';
                             <option value="other">Other</option>
                         </select>
                     </div>
+                    <!-- ID Upload Field -->
+                    <div class="mb-3">
+                        <label for="userIdFile" class="form-label">Upload ID (JPEG/PNG)</label>
+                        <input type="file" id="userIdFile" class="form-control" accept="image/jpeg,image/png" required>
+                    </div>
+
+                    <!-- Age Input Field -->
+                    <div class="mb-3">
+                        <label for="userAge" class="form-label">Your Age</label>
+                        <input type="number" id="userAge" class="form-control" required>
+                    </div>
+
                     <div class="mb-3">
                         <label for="notes" class="form-label">Details</label>
                         <textarea id="notes" class="form-control"></textarea>
@@ -80,6 +92,8 @@ require '../../database/connection.php';
                 <p><strong>Title:</strong> <span id="caseTitleDetail"></span></p>
                 <p><strong>Type:</strong> <span id="caseTypeDetail"></span></p>
                 <p><strong>Status:</strong> <span id="caseStatusDetail"></span></p>
+                <p><strong>ID File:</strong> <a id="caseIdFileLink" href="#" target="_blank">View Uploaded ID</a></p>
+                <p><strong>Age:</strong> <span id="caseAgeDetail"></span></p>
                 <p><strong>Details:</strong> <span id="caseNotesDetail"></span></p>
                 <p><strong>Submitted At:</strong> <span id="caseSubmittedAt"></span></p>
             </div>
@@ -114,6 +128,19 @@ require '../../database/connection.php';
                             <option value="other">Other</option>
                         </select>
                     </div>
+                    <!-- Edit ID Upload Field -->
+                    <div class="mb-3">
+                        <label for="editUserIdFile" class="form-label">Update ID (JPEG/PNG)</label>
+                        <input type="file" id="editUserIdFile" class="form-control" accept="image/jpeg,image/png">
+                        <small class="text-muted">Leave empty if you do not want to update the ID file.</small>
+                    </div>
+
+                    <!-- Edit Age Input Field -->
+                    <div class="mb-3">
+                        <label for="editUserAge" class="form-label">Update Age</label>
+                        <input type="number" id="editUserAge" class="form-control" required>
+                    </div>
+
                     <div class="mb-3">
                         <label for="editNotes" class="form-label">Details</label>
                         <textarea id="editNotes" class="form-control"></textarea>
@@ -166,7 +193,6 @@ require '../../database/connection.php';
             });
     }
 
-
     function viewCase(caseId) {
         $.get(`../../../backend/user/child_youth_services_case/view_case.php`, {
                 id: caseId
@@ -180,6 +206,8 @@ require '../../database/connection.php';
                     $('#caseStatusDetail').text(data.case.status);
                     $('#caseNotesDetail').text(data.case.notes || 'No details provided.');
                     $('#caseSubmittedAt').text(data.case.created_at);
+                    $('#caseAgeDetail').text(data.case.user_age || 'N/A');
+                    $('#caseIdFileLink').attr('href', '../../../uploads/user_ids/' + data.case.user_id_file).text("View ID File");
                     $('#viewCaseModal').modal('show');
                 } else {
                     alert(data.message);
@@ -203,6 +231,7 @@ require '../../database/connection.php';
                     $('#editCaseTitle').val(data.case.case_title);
                     $('#editCaseType').val(data.case.case_type);
                     $('#editNotes').val(data.case.notes || '');
+                    $('#editUserAge').val(data.case.user_age || ''); // Populate age
                     $('#editCaseModal').modal('show');
                 } else {
                     alert(data.message);
@@ -215,30 +244,37 @@ require '../../database/connection.php';
     }
 
     function submitEditCase() {
-        const formData = {
-            id: $('#editCaseId').val(),
-            case_title: $('#editCaseTitle').val(),
-            case_type: $('#editCaseType').val(),
-            notes: $('#editNotes').val(),
-        };
+        const formData = new FormData();
+        formData.append('id', $('#editCaseId').val());
+        formData.append('case_title', $('#editCaseTitle').val());
+        formData.append('case_type', $('#editCaseType').val());
+        formData.append('notes', $('#editNotes').val());
+        formData.append('user_age', $('#editUserAge').val());
+        if ($('#editUserIdFile')[0].files.length > 0) {
+            formData.append('user_id_file', $('#editUserIdFile')[0].files[0]); // Include file if selected
+        }
 
-        $.post(`../../../backend/user/child_youth_services_case/edit_case.php`, formData)
-            .done(response => {
-                console.log("Edit case submit response:", response); // Debugging response
+        $.ajax({
+            url: '../../../backend/user/child_youth_services_case/edit_case.php',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: (response) => {
+                console.log("Edit case submit response:", response);
                 const data = JSON.parse(response);
                 alert(data.message);
                 if (data.success) {
-                    // Hide the modal and refresh the cases list
                     $('#editCaseModal').modal('hide');
                     fetchUserCases();
                 }
-            })
-            .fail(err => {
+            },
+            error: (err) => {
                 console.error("Failed to edit case:", err);
                 alert('Failed to edit case.');
-            });
+            },
+        });
     }
-
 
     function deleteCase(caseId) {
         if (!confirm('Are you sure you want to delete this case?')) return;
@@ -247,7 +283,7 @@ require '../../database/connection.php';
                 id: caseId
             })
             .done(response => {
-                console.log(response);
+                console.log("Delete case response:", response);
                 const data = JSON.parse(response);
                 alert(data.message);
                 if (data.success) {
@@ -260,34 +296,38 @@ require '../../database/connection.php';
             });
     }
 
-
-    // Function to open the case submission modal
     function openCaseModal() {
         $('#caseModal').modal('show');
     }
 
-    // Function to submit a new case
     function submitCase() {
-        const formData = {
-            case_title: $('#caseTitle').val(),
-            case_type: $('#caseType').val(),
-            notes: $('#notes').val(),
-        };
+        const formData = new FormData();
+        formData.append('case_title', $('#caseTitle').val());
+        formData.append('case_type', $('#caseType').val());
+        formData.append('notes', $('#notes').val());
+        formData.append('user_age', $('#userAge').val());
+        formData.append('user_id_file', $('#userIdFile')[0].files[0]);
 
-        $.post('../../../backend/user/child_youth_services_case/submit_user_case.php', formData)
-            .done(response => {
-                console.log(response); // Debugging the response
+        $.ajax({
+            url: '../../../backend/user/child_youth_services_case/submit_user_case.php',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: (response) => {
+                console.log("Submit case response:", response);
                 const data = JSON.parse(response);
                 alert(data.message);
                 if (data.success) {
                     $('#caseModal').modal('hide');
                     fetchUserCases();
                 }
-            })
-            .fail(err => {
+            },
+            error: (err) => {
                 console.error("Failed to submit case:", err);
                 alert('Failed to submit case.');
-            });
+            },
+        });
     }
 
     // Initial data fetch on page load
