@@ -36,7 +36,7 @@
 <?php else: ?>
     <!-- User Sidebar -->
     <section id="sidebar">
-        <a href="index.php" class="logo">
+        <a href="/pages/user/dashboard.php" class="logo">
             <img src="../../assets/img/Unified-LGU-3-LOGO-preview.png" alt="LGU Logo">
             <span>LGU: 3</span>
         </a>
