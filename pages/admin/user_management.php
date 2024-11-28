@@ -107,6 +107,7 @@ include '../../include/topbar.php';
         <!-- Users Table -->
         <div class="card shadow-sm">
             <div class="card-body">
+                <div class="table-responsive">
                 <table class="table table-hover table-bordered table-striped custom-table">
                     <thead>
                         <tr>
@@ -182,6 +183,7 @@ include '../../include/topbar.php';
                         <?php endif; ?>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
 
